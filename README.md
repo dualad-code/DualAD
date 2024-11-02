@@ -2,21 +2,56 @@
  
 # (The code cleaning is still in progress!)
 
+<div align='center'>
+
 ![DualAD Framework](./assets/teaser.png)
 
+🌍 [Project Page](https://diamond-wm.github.io) • 🤓 [Paper](https://arxiv.org/pdf/2405.12399) 
 
-> **DualAD** is an autonomous driving framework that integrates reasoning capabilities with traditional planning modules to handle complex driving scenarios. By leveraging a dual-layer system, DualAD combines rule-based planning with large language models (LLMs) for more human-like cognitive reasoning in critical situations.
+</div>
 
-## Overview
+[**TL;DR**] DualAD is an autonomous driving framework that integrates reasoning capabilities (large language models) with traditional planning modules (rule-based) to handle complex driving scenarios. 
 
-DualAD aims to imitate human cognitive processes in autonomous driving by separating planning into two layers:
-1. **Lower Layer** – Manages basic driving tasks through a rule-based motion planner.
-2. **Upper Layer** – Acts as a reasoning module using LLMs to assess potential dangers and make real-time adjustments in critical scenarios.
+## Installation
+- Setup the nuPlan dataset as described [HERE](https://nuplan-devkit.readthedocs.io/en/latest/dataset_setup.html). Make sure you have a general filesystem hierarchy like this (nuplan is at the same level as DualAD's working directory)
+   ```bash
+   # echo ${HOME} to see what is it
+   ${HOME}/nuplan
+   ├── exp
+   └── dataset
+      ├── maps
+      └── nuplan-v1.1
+   ${HOME}/DualAD
+   ```
+- Quick install to try DualAD using miniconda:
+   ```bash
+   git clone https://github.com/TUM-AVS/DualAD.git
+   cd DualAD
+   conda create -n dualad python=3.9
+   conda activate dualad
+   pip install -e .
+   pip install -r requirements_torch.txt
+   pip install -r requirements.txt
+   # Set env variable
+   bash set_env.sh
+   ```
 
-### Key Features
-- **Dual-Layer Architecture**: Combines routine driving tasks with high-level reasoning for safety and efficiency.
-- **Text Encoding**: Converts driving scenarios into textual descriptions, enhancing the LLM’s understanding.
-- **Closed-Loop Simulations**: Validates performance in realistic, complex environments, outperforming standard planners.
+## Get LLM API (You can skip this to first run the code without LLM)
+GLM-4-Flash ([FREE](https://open.bigmodel.cn/pricing)) and [GPT-4o](https://platform.openai.com/settings/organization/api-keys) ([Need to pay](https://openai.com/api/pricing/)). For example, the API keys look like below (if you have problem with getting the free one (GLM-4-Flash), feel free to contact dingrui.wang@tum.de)
+
+   ```bash
+   # GLM-4-Flash
+   7e8138a27b2cd87c7691ac4a7XXXXXXXXXXXXXXXXXXXXXX
+   # GPT-4o
+   sk-proj-IDX3WOWAk28xifvCyXXXXXXXXXXXXXXXXXXXXXX
+   ```
+In nuplan/planning/simulation/planner/abstract_idm_planner.py line: 327, add your API key and set use_llm to True.
+## Try DualAD
+For DualAD (Lattice-IDM):
+   ```bash
+   python ./nuplan/planning/script/run_simulation.py
+   ```
+
 ## Performance
 
 DualAD demonstrates improved performance in challenging scenarios compared to other planners. Key metrics such as **Closed-Loop Score (CLS)** and **Reactive Closed-Loop Score (R-CLS)** showcase DualAD’s ability to outperform rule-based and learning-based models in terms of safety and decision quality.
@@ -27,17 +62,13 @@ DualAD demonstrates improved performance in challenging scenarios compared to ot
 | Lattice-IDM              | 52.36       | 39.76             |
 | **DualAD (Lattice-IDM)** | **60.25**   | **57.31**         |
 
-## Installation
 
-### Prerequisites
-- Python 3.8+
-- NuPlan Simulator (for closed-loop simulation)
 
-### Steps
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/username/DualAD.git
-   cd DualAD
-2. Install the dependencies:
-   ```bash
-   pip install -r requirements.txt
+
+
+## Credits
+
+- [https://github.com/motional/nuplan-devkit](https://github.com/motional/nuplan-devkit)
+- [https://github.com/huggingface/huggingface_hub](https://github.com/huggingface/huggingface_hub)
+- [https://github.com/autonomousvision/tuplan_garage](https://github.com/autonomousvision/tuplan_garage)
+- [https://github.com/jchengai/planTF](https://github.com/jchengai/planTF)

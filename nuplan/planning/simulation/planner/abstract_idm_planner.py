@@ -279,7 +279,7 @@ class AbstractIDMPlanner(AbstractPlanner, ABC):
         planned_trajectory: List[EgoState] = [projected_ego_state]
         
         self.use_text_encoder = True
-        use_llm = True
+        use_llm = False
         scope = 100
         if use_llm and self.LOCAL_TIMER%10==0:
             ego_x = ego_state.center.x
@@ -322,7 +322,7 @@ class AbstractIDMPlanner(AbstractPlanner, ABC):
  
             # print(f"------------------------ At time step {self.LOCAL_TIMER} --------------------------")
             print(descriptions_output)
-            open_ai = True
+            open_ai = False
 
             if open_ai:
                 os.environ["OPENAI_API_KEY"] = ""
