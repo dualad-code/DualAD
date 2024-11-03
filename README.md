@@ -11,7 +11,7 @@
 [**TL;DR**] DualAD is an autonomous driving framework that integrates reasoning capabilities (large language models) with traditional planning modules (rule-based) to handle complex driving scenarios. 
 
 ## Installation
-- Setup the nuPlan dataset as described [HERE](https://nuplan-devkit.readthedocs.io/en/latest/dataset_setup.html). Make sure you have a general filesystem hierarchy like this (nuplan is at the same level as DualAD's working directory)
+- Download the nuPlan dataset as described [HERE](https://nuplan-devkit.readthedocs.io/en/latest/dataset_setup.html). The download link is [here](https://www.nuscenes.org/nuplan#download) (You need to sign up first) and you just need to download the ```Mini Split``` in our case. Make sure you have a general filesystem hierarchy like this (nuplan is at the same level as DualAD's working directory) 
    ```bash
    # echo ${HOME} to see what is it
    ${HOME}/nuplan
