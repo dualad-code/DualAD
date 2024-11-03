@@ -37,7 +37,7 @@
    ```
 
 ## Get LLM API (You can skip this to first run the code without LLM)
-GLM-4-Flash ([FREE](https://open.bigmodel.cn/pricing)) and [GPT-4o](https://platform.openai.com/settings/organization/api-keys) ([Need to pay](https://openai.com/api/pricing/)). For example, the API keys look like below (if you have problem with getting the free one (GLM-4-Flash), feel free to contact dingrui.wang@tum.de)
+[GLM-4-Flash](https://bigmodel.cn/usercenter/apikeys) ([FREE](https://open.bigmodel.cn/pricing)) and [GPT-4o](https://platform.openai.com/settings/organization/api-keys) ([Need to pay](https://openai.com/api/pricing/)). For example, the API keys look like below (if you have problem with getting the free one (GLM-4-Flash), feel free to contact dingrui.wang@tum.de)
 
    ```bash
    # GLM-4-Flash
@@ -45,7 +45,7 @@ GLM-4-Flash ([FREE](https://open.bigmodel.cn/pricing)) and [GPT-4o](https://plat
    # GPT-4o
    sk-proj-IDX3WOWAk28xifvCyXXXXXXXXXXXXXXXXXXXXXX
    ```
-In ```nuplan/planning/simulation/planner/abstract_idm_planner.py line: 327```, add your API key and set ```use_llm``` to ```True```.
+In [```LLM.yml```](./LLM.yml), add your API keys and set ```use_llm``` to ```True```. If you are using GPT-4o, then set ```use_open_ai``` to ```True```.
 ## Try DualAD
 For DualAD (Lattice-IDM):
    ```bash

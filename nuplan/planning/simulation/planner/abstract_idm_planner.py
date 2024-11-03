@@ -27,7 +27,7 @@ from nuplan.planning.simulation.path.path import AbstractPath
 from nuplan.planning.simulation.path.utils import trim_path
 from nuplan.planning.simulation.planner.abstract_planner import AbstractPlanner
 from nuplan.planning.simulation.trajectory.interpolated_trajectory import InterpolatedTrajectory
-
+import yaml
 from openai import OpenAI
 import os
 import json
@@ -278,8 +278,11 @@ class AbstractIDMPlanner(AbstractPlanner, ABC):
         projected_ego_state = self._idm_state_to_ego_state(ego_idm_state, current_time_point, vehicle_parameters)
         planned_trajectory: List[EgoState] = [projected_ego_state]
         
-        self.use_text_encoder = True
-        use_llm = False
+        config_file = "LLM.yml"
+        with open(config_file, "r") as file:
+            config = yaml.safe_load(file)
+        self.use_text_encoder = config['use_text_encoder']
+        use_llm = config['use_llm']
         scope = 100
         if use_llm and self.LOCAL_TIMER%10==0:
             ego_x = ego_state.center.x
@@ -322,15 +325,16 @@ class AbstractIDMPlanner(AbstractPlanner, ABC):
  
             # print(f"------------------------ At time step {self.LOCAL_TIMER} --------------------------")
             print(descriptions_output)
-            open_ai = False
+            use_open_ai = config['use_open_ai']
 
-            if open_ai:
-                os.environ["OPENAI_API_KEY"] = ""
+
+            if use_open_ai:
+                os.environ["OPENAI_API_KEY"] = config['open_ai_key']
                 client = OpenAI()
                 model_choice = "gpt-4o-2024-08-06"
                 time_to_sleep = 30
             else: 
-                client = ZhipuAI(api_key="") 
+                client = ZhipuAI(api_key=config['zhipu_ai_key']) 
                 model_choice = "glm-4-flash"
                 time_to_sleep = 7
 
