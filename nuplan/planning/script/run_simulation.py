@@ -118,23 +118,26 @@ import tempfile
 if __name__ == '__main__':
 
 
+    NUPLAN_EXP_ROOT = os.getenv('NUPLAN_EXP_ROOT')
+    BENCHMARK = 'Hard' # superHard Hard
     # Location of path with all simulation configs
     CONFIG_PATH = '../script/config/simulation'
     CONFIG_NAME = 'default_simulation'
-    SAVE_DIR = Path(tempfile.gettempdir()) / 'tutorial_nuplan_framework' 
+    
     # Select the planner and simulation challenge
     PLANNER = 'idm_planner'  # [simple_planner, ml_planner]
     CHALLENGE = 'closed_loop_nonreactive_agents'  # [open_loop_boxes, closed_loop_nonreactive_agents, closed_loop_reactive_agents]
     DATASET_PARAMS = [
         'scenario_builder=nuplan_mini',  # use nuplan mini database
-        'scenario_filter=Hard',  # superHard rethinking-hard initially select all scenarios in the database
+        f'scenario_filter={BENCHMARK}',  # initially select all scenarios in the database
         # 'scenario_filter.scenario_types=[high_magnitude_speed]',  # select scenario types
         # 'scenario_filter.num_scenarios_per_type=20',  # use 10 scenarios per scenario type
     ]
     # [starting_straight_traffic_light_intersection_traversal, high_lateral_acceleration, changing_lane, high_magnitude_speed, low_magnitude_speed, starting_left_turn, starting_right_turn, stopping_with_lead, following_lane_with_lead, near_multiple_vehicles, traversing_pickup_dropoff, behind_long_vehicle, waiting_for_pedestrian_to_cross, stationary_in_traffic]
     # Name of the experiment
-    EXPERIMENT = 'simulation_simple_experiment'
+    EXPERIMENT = BENCHMARK + '_experiment'
 
+    SAVE_DIR = f"{NUPLAN_EXP_ROOT}/{PLANNER}"
     # Initialize configuration management system
     hydra.core.global_hydra.GlobalHydra.instance().clear()  # reinitialize hydra if already initialized
     hydra.initialize(config_path=CONFIG_PATH)

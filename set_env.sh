@@ -8,7 +8,6 @@ export NUPLAN_DATA_ROOT="$parent_dir/nuplan/dataset"
 export NUPLAN_MAPS_ROOT="$parent_dir/nuplan/dataset/maps"
 export NUPLAN_EXP_ROOT="$parent_dir/nuplan/exp"
 
-
 # Define the current working directory
 current_dir=$(pwd)
 

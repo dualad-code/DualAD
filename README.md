@@ -6,7 +6,7 @@
 
 ![DualAD Framework](./assets/teaser.png)
 
-🌍 [Project Page](https://diamond-wm.github.io) • 🤓 [Paper](https://arxiv.org/pdf/2405.12399) 
+🌍 [Project Page](https://dualad.github.io/) • 🤓 [Paper](https://arxiv.org/pdf/2409.18053) 
 
 </div>
 
@@ -33,7 +33,7 @@
    pip install -r requirements_torch.txt
    pip install -r requirements.txt
    # Set env variable
-   bash set_env.sh
+   . set_env.sh
    ```
 
 ## Get LLM API (You can skip this to first run the code without LLM)
@@ -45,7 +45,7 @@ GLM-4-Flash ([FREE](https://open.bigmodel.cn/pricing)) and [GPT-4o](https://plat
    # GPT-4o
    sk-proj-IDX3WOWAk28xifvCyXXXXXXXXXXXXXXXXXXXXXX
    ```
-In nuplan/planning/simulation/planner/abstract_idm_planner.py line: 327, add your API key and set use_llm to True.
+In ```nuplan/planning/simulation/planner/abstract_idm_planner.py line: 327```, add your API key and set ```use_llm``` to ```True```.
 ## Try DualAD
 For DualAD (Lattice-IDM):
    ```bash
