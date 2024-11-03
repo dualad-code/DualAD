@@ -1,7 +1,5 @@
 # DualAD: Dual-Layer Planning for Autonomous Driving
  
-# (The code cleaning is still in progress!)
-
 <div align='center'>
 
 ![DualAD Framework](./assets/teaser.png)
@@ -23,7 +21,7 @@
       └── nuplan-v1.1
    ${HOME}/DualAD
    ```
-- Quick install to try DualAD using miniconda:
+- Quick install to try DualAD using [miniconda](https://docs.anaconda.com/free/miniconda/miniconda-install/) (This will take some time):
    ```bash
    git clone https://github.com/TUM-AVS/DualAD.git
    cd DualAD
@@ -63,7 +61,16 @@ DualAD demonstrates improved performance in challenging scenarios compared to ot
 | **DualAD (Lattice-IDM)** | **60.25**   | **57.31**         |
 
 
+## Credits
 
+```text
+@article{wang2024dualad,
+  title={DualAD: Dual-Layer Planning for Reasoning in Autonomous Driving},
+  author={Wang, Dingrui and Kaufeld, Marc and Betz, Johannes},
+  journal={arXiv preprint arXiv:2409.18053},
+  year={2024}
+}
+```
 
 
 ## Credits
