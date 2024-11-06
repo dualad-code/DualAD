@@ -2,35 +2,31 @@ _target_: nuplan.planning.scenario_builder.scenario_filter.ScenarioFilter
 _convert_: all
 scenario_types: null
 scenario_tokens:
-  - 5056deefc1115299 #
-  - de3c268de4395001 #
-  - a9636df727835fc8 # 
-  - df0f6eaa728254ba # 
-  - 1990effcb0f55bd2 # 
-  - 5fb5ddffbdc651c3 #
-  - 0afddce0959257f9 #
-  - 205908c8f73756d9 #
-  - 03ee30b099635920 #
-  - c9bc00d0f48b5bc1 #
-  - 878fafdc99cc592b #
-  - e0cd66542e715685 # 
-  - 329457a744415fd2 #
-  - e668948b1c0f5b82 #
+  - 5056deefc1115299
+  - de3c268de4395001 
+  - a9636df727835fc8 
+  - df0f6eaa728254ba 
+  - 1990effcb0f55bd2 
+  - 5fb5ddffbdc651c3 
+  - 0afddce0959257f9 
+  - 205908c8f73756d9 
+  - 03ee30b099635920 
+  - c9bc00d0f48b5bc1 
+  - 878fafdc99cc592b 
+  - e0cd66542e715685 
+  - 329457a744415fd2 
+  - e668948b1c0f5b82 
   - 52bd18c9f5db513a
   - 90e30f7bf082576a
   - a59a8c3490f154e2
   - f690276c57675cd5
   - 9febc58469ac56c2
-  - b7e64de3350e5118 # lattice good
-  - c881b474ecc256ac # lattice good
-  - b52c963ae9175824 # lattice good
-  - 34ac5c7f439b561a # urban ^ pdm bad, lattice good
-  - 93a905027499542c # urban ^ pdm bad, lattice good
-  # - 0a9404513dcc54f2 # urban ^ pdm bad, lattice good
-  # - b8d925e54e6f5a8f # urban ^ pdm bad, lattice good
-  #- 37f5362b484452f4 # urban ^ pdm bad, lattice good
-  #- 542b953f57c35e4a # urban ^ pdm bad, lattice good
-  #- c82cfc60d1ee5fdb # urban ^ pdm bad, lattice good
+  - b7e64de3350e5118
+  - c881b474ecc256ac 
+  - b52c963ae9175824 
+  - 34ac5c7f439b561a 
+  - 93a905027499542c 
+
 
 log_names: null                     # Filter scenarios by log names
 map_names: null                     # Filter scenarios by map names

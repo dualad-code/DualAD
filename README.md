@@ -11,7 +11,7 @@
 [**TL;DR**] DualAD is an autonomous driving framework that integrates reasoning capabilities (large language models) with traditional planning modules (rule-based) to handle complex driving scenarios. 
 
 ## Installation
-- Download the nuPlan dataset as described [HERE](https://nuplan-devkit.readthedocs.io/en/latest/dataset_setup.html). The download link is [here](https://www.nuscenes.org/nuplan#download) (You need to sign up first) and you just need to download the ```Mini Split``` in our case. Make sure you have a general filesystem hierarchy like this (nuplan is at the same level as DualAD's working directory) 
+- Download the nuPlan dataset as described [HERE](https://nuplan-devkit.readthedocs.io/en/latest/dataset_setup.html). The download link is [here](https://www.nuscenes.org/nuplan#download) (You need to sign up first) and you just need to download the ```Mini Split``` in our case. Make sure you have a general filesystem hierarchy like this (nuplan is at the same level as DualAD's working directory):
    ```bash
    # echo ${HOME} to see what is it
    ${HOME}/nuplan
@@ -49,6 +49,25 @@ For DualAD (Lattice-IDM):
    ```bash
    python ./nuplan/planning/script/run_simulation.py
    ```
+The planning result can be find in folder below:
+   ```bash
+   ${HOME}/nuplan
+   └── exp
+   ```
+## Visualization
+To visualize the planning results, we use Nuboard, provided by the NuPlan devkit:
+   ```bash
+   python ./nuplan/planning/script/run_nuboard.py
+   ```
+This will open a web interface in your default web browser. 
+1. In the left panel, click **Upload file**.
+2. Select the planning result file ending with `.nuboard` (located in `{HOME}/nuplan/exp`). You may need to navigate through the folders to locate it—e.g., `nuboard_128930XX.nuboard`—and upload it.
+3. Next, click the **Scenario** option in the left panel.
+4. Click the "gear" icon in the upper-right corner, select a **Scenario Token**, and click **Query Scenario**.
+
+You should now see a view similar to the following:
+
+![Visualization Example](./assets/bokeh_plot.png)
 
 ## Performance
 

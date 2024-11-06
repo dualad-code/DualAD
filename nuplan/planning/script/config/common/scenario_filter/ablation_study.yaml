@@ -2,16 +2,16 @@ _target_: nuplan.planning.scenario_builder.scenario_filter.ScenarioFilter
 _convert_: all
 scenario_types: null
 scenario_tokens:
-  - 5056deefc1115299 #
-  - de3c268de4395001 #
-  - a9636df727835fc8 # 
-  - 1990effcb0f55bd2 # 
-  - 5fb5ddffbdc651c3 #
-  - 0afddce0959257f9 #
-  - 03ee30b099635920 #
-  - 878fafdc99cc592b #
-  - e0cd66542e715685 # 
-  - e668948b1c0f5b82 #
+  - 5056deefc1115299 
+  - de3c268de4395001 
+  - a9636df727835fc8 
+  - 1990effcb0f55bd2 
+  - 5fb5ddffbdc651c3 
+  - 0afddce0959257f9 
+  - 03ee30b099635920 
+  - 878fafdc99cc592b 
+  - e0cd66542e715685 
+  - e668948b1c0f5b82
 
 log_names: null                     # Filter scenarios by log names
 map_names: null                     # Filter scenarios by map names

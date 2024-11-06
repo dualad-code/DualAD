@@ -1,16 +1,3 @@
-import math
-import time
-import matplotlib.pyplot as plt
-from shapely import Point, LineString
-from .planner_utils import *
-from .observation import *
-
-from .state_lattice_path_planner import LatticePlanner
-
-from nuplan.planning.simulation.observation.observation_type import DetectionsTracks
-from nuplan.planning.simulation.planner.abstract_planner import AbstractPlanner, PlannerInitialization, PlannerInput
-from nuplan.planning.simulation.trajectory.interpolated_trajectory import InterpolatedTrajectory
-
 import logging
 import math
 from typing import List, Tuple
@@ -23,10 +10,21 @@ from nuplan.planning.simulation.planner.abstract_planner import PlannerInitializ
 from nuplan.planning.simulation.planner.utils.breadth_first_search import BreadthFirstSearch
 from nuplan.planning.simulation.trajectory.abstract_trajectory import AbstractTrajectory
 
-from nuplan.common.geometry.convert import relative_to_absolute_poses
+logger = logging.getLogger(__name__)
+
 
 class IDMPlanner(AbstractIDMPlanner):
-    def __init__(self, 
+    """
+    The IDM planner is composed of two parts:
+        1. Path planner that constructs a route to the same road block as the goal pose.
+        2. IDM policy controller to control the longitudinal movement of the ego along the planned route.
+    """
+    
+    # Inherited property, see superclass.
+    requires_scenario: bool = False
+
+    def __init__(
+        self,
         target_velocity: float,
         min_gap_to_lead_agent: float,
         headway_time: float,
@@ -35,7 +33,18 @@ class IDMPlanner(AbstractIDMPlanner):
         planned_trajectory_samples: int,
         planned_trajectory_sample_interval: float,
         occupancy_map_radius: float,
-        ):
+    ):
+        """
+        Constructor for IDMPlanner
+        :param target_velocity: [m/s] Desired velocity in free traffic.
+        :param min_gap_to_lead_agent: [m] Minimum relative distance to lead vehicle.
+        :param headway_time: [s] Desired time headway. The minimum possible time to the vehicle in front.
+        :param accel_max: [m/s^2] maximum acceleration.
+        :param decel_max: [m/s^2] maximum deceleration (positive value).
+        :param planned_trajectory_samples: number of elements to sample for the planned trajectory.
+        :param planned_trajectory_sample_interval: [s] time interval of sequence to sample from.
+        :param occupancy_map_radius: [m] The range around the ego to add objects to be considered.
+        """
         super(IDMPlanner, self).__init__(
             target_velocity,
             min_gap_to_lead_agent,
@@ -46,124 +55,105 @@ class IDMPlanner(AbstractIDMPlanner):
             planned_trajectory_sample_interval,
             occupancy_map_radius,
         )
-        self._max_path_length = MAX_LEN # [m]
-        self._future_horizon = T # [s] 
-        self._step_interval = DT # [s]
-        self._target_speed = 13.0 # [m/s]
-        self._N_points = int(T/DT)
+
         self._initialized = False
         self.discrete_path = []
-    
-    def name(self) -> str:
-        return "IDMPlanner"
-    
-    def observation_type(self):
-        return DetectionsTracks
 
-    def initialize(self, initialization: PlannerInitialization):
+    def initialize(self, initialization: PlannerInitialization) -> None:
+        """Inherited, see superclass."""
         self._map_api = initialization.map_api
-        self._goal = initialization.mission_goal
-        self._route_roadblock_ids = initialization.route_roadblock_ids
-        self._initialize_route_plan(self._route_roadblock_ids)
-        self._path_planner = LatticePlanner(self._candidate_lane_edge_ids, self._max_path_length)
+        self._initialize_route_plan(initialization.route_roadblock_ids)
+        self._initialized = False
 
-    def _initialize_route_plan(self, route_roadblock_ids):
-        self._route_roadblocks = []
-
-        for id_ in route_roadblock_ids:
-            block = self._map_api.get_map_object(id_, SemanticMapLayer.ROADBLOCK)
-            block = block or self._map_api.get_map_object(id_, SemanticMapLayer.ROADBLOCK_CONNECTOR)
-            self._route_roadblocks.append(block)
-
-        self._candidate_lane_edge_ids = [
-            edge.id for block in self._route_roadblocks if block for edge in block.interior_edges
-        ]
-    
-    def _get_reference_path(self, ego_state, traffic_light_data, observation):
-        # Get starting block
-        starting_block = None
-        min_target_speed = 3
-        max_target_speed = 15
-        cur_point = (ego_state.rear_axle.x, ego_state.rear_axle.y)
-        closest_distance = math.inf
-
-        for block in self._route_roadblocks:
-            for edge in block.interior_edges:
-                distance = edge.polygon.distance(Point(cur_point))
-                if distance < closest_distance:
-                    starting_block = block
-                    closest_distance = distance
-
-            if np.isclose(closest_distance, 0):
-                break
-            
-        # In case the ego vehicle is not on the route, return None
-        if closest_distance > 5:
-            pass#return None
-
-        # Get reference path, handle exception
-        try:
-            ref_path = self._path_planner.plan(ego_state, starting_block, observation, traffic_light_data)
-        except:
-            ref_path = None
-
-        if ref_path is None:
-            return None
-
-        # Annotate red light to occupancy
-        occupancy = np.zeros(shape=(ref_path.shape[0], 1))
-        for data in traffic_light_data:
-            id_ = str(data.lane_connector_id)
-            if data.status == TrafficLightStatusType.RED and id_ in self._candidate_lane_edge_ids:
-                lane_conn = self._map_api.get_map_object(id_, SemanticMapLayer.LANE_CONNECTOR)
-                conn_path = lane_conn.baseline_path.discrete_path
-                conn_path = np.array([[p.x, p.y] for p in conn_path])
-                red_light_lane = transform_to_ego_frame(conn_path, ego_state)
-                occupancy = annotate_occupancy(occupancy, ref_path, red_light_lane)
-
-        # Annotate max speed along the reference path
-        target_speed = starting_block.interior_edges[0].speed_limit_mps or self._target_speed
-        target_speed = np.clip(target_speed, min_target_speed, max_target_speed)
-        max_speed = annotate_speed(ref_path, target_speed)
-
-        # Finalize reference path
-        ref_path = np.concatenate([ref_path, max_speed, occupancy], axis=-1) # [x, y, theta, k, v_max, occupancy]
-        if len(ref_path) < MAX_LEN * 10:
-            ref_path = np.append(ref_path, np.repeat(ref_path[np.newaxis, -1], MAX_LEN*10-len(ref_path), axis=0), axis=0)
-        
-        return ref_path
-    
-    def compute_planner_trajectory(self, current_input: PlannerInput):
-        s = time.time()
-        iteration = current_input.iteration.index
-        history = current_input.history
-        traffic_light_data = list(current_input.traffic_light_data)
-        ego_state, observation = history.current_state
+    def compute_planner_trajectory(self, current_input: PlannerInput) -> AbstractTrajectory:
+        """Inherited, see superclass."""
+        # Ego current state
+        ego_state, observations = current_input.history.current_state
 
         if not self._initialized:
-            # Get reference path
-            ref_path = self._get_reference_path(ego_state, traffic_light_data, observation)
-            ref_path_de = ref_path[:, :3].tolist()
-            # subset_400 = ref_path_de[:400]
-            # indices = np.linspace(0, 399, 80, dtype=int)
-            # ref_path_de = [subset_400[i] for i in indices]
-
-            discrete_path = [StateSE2.deserialize(pose) for pose in ref_path_de]
-            discrete_path = relative_to_absolute_poses(ego_state.rear_axle, discrete_path)
-            self.discrete_path = discrete_path
-            self._policy.target_velocity = 100
-            self._ego_path = create_path_from_se2(discrete_path)
-            self._ego_path_linestring = path_to_linestring(discrete_path)
-            # self._initialized = True
+            self._initialize_ego_path(ego_state)
+            self._initialized = True
 
         # Create occupancy map
-        occupancy_map, unique_observations = self._construct_occupancy_map(ego_state, observation)
+        occupancy_map, unique_observations = self._construct_occupancy_map(ego_state, observations)
 
         # Traffic light handling
         traffic_light_data = current_input.traffic_light_data
         self._annotate_occupancy_map(traffic_light_data, occupancy_map)
 
-        planned_trajectory = self._get_planned_trajectory(ego_state, occupancy_map, unique_observations)
+        return self._get_planned_trajectory(ego_state, occupancy_map, unique_observations)
 
-        return planned_trajectory
+    def _initialize_ego_path(self, ego_state: EgoState) -> None:
+        """
+        Initializes the ego path from the ground truth driven trajectory
+        :param ego_state: The ego state at the start of the scenario.
+        """
+        route_plan, _ = self._breadth_first_search(ego_state)
+        ego_speed = ego_state.dynamic_car_state.rear_axle_velocity_2d.magnitude()
+        speed_limit = route_plan[0].speed_limit_mps or self._policy.target_velocity
+        self._policy.target_velocity = speed_limit if speed_limit > ego_speed else ego_speed
+        discrete_path = []
+        for edge in route_plan:
+            discrete_path.extend(edge.baseline_path.discrete_path)
+        self.discrete_path = discrete_path
+        self._ego_path = create_path_from_se2(discrete_path)
+        self._ego_path_linestring = path_to_linestring(discrete_path)
 
+    def _get_starting_edge(self, ego_state: EgoState) -> LaneGraphEdgeMapObject:
+        """
+        Get the starting edge based on ego state. If a lane graph object does not contain the ego state then
+        the closest one is taken instead.
+        :param ego_state: Current ego state.
+        :return: The starting LaneGraphEdgeMapObject.
+        """
+        assert (
+            self._route_roadblocks is not None
+        ), "_route_roadblocks has not yet been initialized. Please call the initialize() function first!"
+        assert len(self._route_roadblocks) >= 2, "_route_roadblocks should have at least 2 elements!"
+
+        starting_edge = None
+        closest_distance = math.inf
+
+        # Check for edges in about first and second roadblocks
+        for edge in self._route_roadblocks[0].interior_edges + self._route_roadblocks[1].interior_edges:
+            if edge.contains_point(ego_state.center):
+                starting_edge = edge
+                break
+
+            # In case the ego does not start on a road block
+            distance = edge.polygon.distance(ego_state.car_footprint.geometry)
+            if distance < closest_distance:
+                starting_edge = edge
+                closest_distance = distance
+
+        assert starting_edge, "Starting edge for IDM path planning could not be found!"
+        return starting_edge
+
+    def _breadth_first_search(self, ego_state: EgoState) -> Tuple[List[LaneGraphEdgeMapObject], bool]:
+        """
+        Performs iterative breath first search to find a route to the target roadblock.
+        :param ego_state: Current ego state.
+        :return:
+            - A route starting from the given start edge
+            - A bool indicating if the route is successfully found. Successful means that there exists a path
+              from the start edge to an edge contained in the end roadblock. If unsuccessful a longest route is given.
+        """
+        assert (
+            self._route_roadblocks is not None
+        ), "_route_roadblocks has not yet been initialized. Please call the initialize() function first!"
+        assert (
+            self._candidate_lane_edge_ids is not None
+        ), "_candidate_lane_edge_ids has not yet been initialized. Please call the initialize() function first!"
+
+        starting_edge = self._get_starting_edge(ego_state)
+        graph_search = BreadthFirstSearch(starting_edge, self._candidate_lane_edge_ids)
+        # Target depth needs to be offset by one if the starting edge belongs to the second roadblock in the list
+        offset = 1 if starting_edge.get_roadblock_id() == self._route_roadblocks[1].id else 0
+        route_plan, path_found = graph_search.search(self._route_roadblocks[-1], len(self._route_roadblocks[offset:]))
+
+        if not path_found:
+            logger.warning(
+                "IDMPlanner could not find valid path to the target roadblock. Using longest route found instead"
+            )
+
+        return route_plan, path_found
