@@ -30,10 +30,12 @@
    pip install -e .
    pip install -r requirements_torch.txt
    pip install -r requirements.txt
-   # Set env variable
-   . set_env.sh
    ```
 
+- Set the environment variable (using ```set_env.sh``` we only set ```NUPLAN_MAPS_ROOT``` etc. temporarily, but if you want to set it permanently, check [SET ENV](./doc/ENV.md))
+   ```bash
+   . set_env.sh
+   ```
 ## Get LLM API (You can skip this to first run the code without LLM)
 [GLM-4-Flash](https://bigmodel.cn/usercenter/apikeys) ([FREE](https://open.bigmodel.cn/pricing)) and [GPT-4o](https://platform.openai.com/settings/organization/api-keys) ([Need to pay](https://openai.com/api/pricing/)). For example, the API keys look like below (if you have problem with getting the free one (GLM-4-Flash), feel free to contact dingrui.wang@tum.de)
 
@@ -71,13 +73,15 @@ You should now see a view similar to the following:
 
 ## Performance
 
-DualAD demonstrates improved performance in challenging scenarios compared to other planners. Key metrics such as **Closed-Loop Score (CLS)** and **Reactive Closed-Loop Score (R-CLS)** showcase DualAD’s ability to outperform rule-based and learning-based models in terms of safety and decision quality.
+DualAD demonstrates improved performance in challenging scenarios compared to other planners. Key metrics such as **Non-Reactive Closed-Loop Score (NR-CLS)** and **Reactive Closed-Loop Score (R-CLS)**. The results showcase DualAD’s ability to outperform rule-based and learning-based SOTA on Hard-55 benchmark in R-CLS metric.
 
-| Planner                  | Hard-55 CLS | Super-Hard-24 CLS |
+| Planner                  | Hard-55 R-CLS | Super-Hard-24 R-CLS |
 |--------------------------|-------------|--------------------|
-| IDM                      | 50.12       | 34.56             |
-| Lattice-IDM              | 52.36       | 39.76             |
-| **DualAD (Lattice-IDM)** | **60.25**   | **57.31**         |
+| IDM                      | 34.56       | 20.73             |
+| Lattice-IDM              | 39.76       | 33.83             |
+| PDM-Closed               | 35.15       | 7.57             |
+| PlanTF                   | 53,60       | **51.30**             |
+| **DualAD (Lattice-IDM + GLM-Flash-4)** | **57.31**   | 46.03         |
 
 
 ## Credits

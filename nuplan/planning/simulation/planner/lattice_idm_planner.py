@@ -25,7 +25,7 @@ from nuplan.planning.simulation.trajectory.abstract_trajectory import AbstractTr
 
 from nuplan.common.geometry.convert import relative_to_absolute_poses
 
-class IDMPlanner(AbstractIDMPlanner):
+class LatticeIDMPlanner(AbstractIDMPlanner):
     def __init__(self, 
         target_velocity: float,
         min_gap_to_lead_agent: float,
@@ -36,7 +36,7 @@ class IDMPlanner(AbstractIDMPlanner):
         planned_trajectory_sample_interval: float,
         occupancy_map_radius: float,
         ):
-        super(IDMPlanner, self).__init__(
+        super(LatticeIDMPlanner, self).__init__(
             target_velocity,
             min_gap_to_lead_agent,
             headway_time,

@@ -125,8 +125,8 @@ if __name__ == '__main__':
     CONFIG_NAME = 'default_simulation'
     
     # Select the planner and simulation challenge
-    PLANNER = 'idm_planner'  # [simple_planner, ml_planner]
-    CHALLENGE = 'closed_loop_nonreactive_agents'  # [open_loop_boxes, closed_loop_nonreactive_agents, closed_loop_reactive_agents]
+    PLANNER = 'lattice_idm_planner'  # [simple_planner, ml_planner, idm_planner]
+    CHALLENGE = 'closed_loop_reactive_agents'  # [closed_loop_nonreactive_agents, closed_loop_reactive_agents]
     DATASET_PARAMS = [
         'scenario_builder=nuplan_mini',  # use nuplan mini database
         f'scenario_filter={BENCHMARK}',  # initially select all scenarios in the database
