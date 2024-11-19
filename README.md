@@ -4,8 +4,6 @@
 
 ![DualAD Framework](./assets/teaser.png)
 
-🌍 [Project Page](https://dualad.github.io/) • 🤓 [Paper](https://arxiv.org/pdf/2409.18053) 
-
 </div>
 
 [**TL;DR**] DualAD is an autonomous driving framework that integrates reasoning capabilities (large language models) with traditional planning modules (rule-based) to handle complex driving scenarios. 
@@ -37,7 +35,7 @@
    . set_env.sh
    ```
 ## Get LLM API (You can skip this to first run the code without LLM)
-[GLM-4-Flash](https://bigmodel.cn/usercenter/apikeys) ([FREE](https://open.bigmodel.cn/pricing)) and [GPT-4o](https://platform.openai.com/settings/organization/api-keys) ([Need to pay](https://openai.com/api/pricing/)). For example, the API keys look like below (if you have problem with getting the free one (GLM-4-Flash), feel free to contact dingrui.wang@tum.de)
+[GLM-4-Flash](https://bigmodel.cn/usercenter/apikeys) ([FREE](https://open.bigmodel.cn/pricing)) and [GPT-4o](https://platform.openai.com/settings/organization/api-keys) ([Need to pay](https://openai.com/api/pricing/)). For example, the API keys look like below (if you have problem with getting the free one (GLM-4-Flash), feel free to contact [HERE](15720964649@163.com))
 
    ```bash
    # GLM-4-Flash
@@ -82,18 +80,6 @@ DualAD demonstrates improved performance in challenging scenarios compared to ot
 | PDM-Closed               | 35.15       | 7.57             |
 | PlanTF                   | 53,60       | **51.30**             |
 | **DualAD (Lattice-IDM + GLM-Flash-4)** | **57.31**   | 46.03         |
-
-
-## Credits
-
-```text
-@article{wang2024dualad,
-  title={DualAD: Dual-Layer Planning for Reasoning in Autonomous Driving},
-  author={Wang, Dingrui and Kaufeld, Marc and Betz, Johannes},
-  journal={arXiv preprint arXiv:2409.18053},
-  year={2024}
-}
-```
 
 
 ## Credits
